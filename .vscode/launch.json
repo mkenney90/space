@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - MovingSpriteEx",
+            "request": "launch",
+            "mainClass": "com.zephyr.MovingSpriteEx",
+            "projectName": "Game_e401875f"
+        }
+    ]
+}
