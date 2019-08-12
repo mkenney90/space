@@ -86,6 +86,7 @@ public class Board extends JPanel implements ActionListener {
         for (Rock r: rocks) {
             if (r.strength > 1) {
                 g2d.setPaint(Color.ORANGE);
+                g2d.setStroke(new BasicStroke(3));
                 Rectangle r1 = new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight());
                 AffineTransform ar = AffineTransform.getRotateInstance(Math.toRadians(r.getRotation()), r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2);
                 g2d.draw(ar.createTransformedShape(r1));
