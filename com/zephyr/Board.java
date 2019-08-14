@@ -18,6 +18,7 @@ public class Board extends JPanel implements ActionListener {
     private SpaceShip spaceShip;
     private final int DELAY = 10;
     Controller cont;
+    SoundControl sound;
     private List<Star> stars;
     private List<Rock> rocks;
     private List<RockParticle> rockparts;
@@ -38,6 +39,9 @@ public class Board extends JPanel implements ActionListener {
         spaceShip = new SpaceShip(292, 300);
         cont = new Controller(spaceShip);
         addKeyListener(cont);
+
+        sound = new SoundControl();
+        sound.playSound("startup.wav");
 
         stars = new ArrayList<>();
         rocks = new ArrayList<>();
@@ -142,6 +146,11 @@ public class Board extends JPanel implements ActionListener {
 
                 Shape r2 = r.getBounds();
                 if (r2.intersects(r1)) {
+                    if (r.strength > 1) {
+                        sound.playSound("shatter.wav");
+                    } else {
+                        sound.playSound("break.wav");
+                    }
                     l.setVisible(false);
                     r.strength -= 1;
                     for (int i=0;i<4;i++) {

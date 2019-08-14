@@ -44,6 +44,7 @@ public class SpaceShip extends Sprite {
     public void fireLaser() {
         if (laserTimer > 0) return;
         lasers.add(new Laser(x + getWidth()/2, y + 4, 6, laserStrength));
+        SoundControl.playSound("laser1.wav");
         laserTimer = laserDelay;
     }
 
