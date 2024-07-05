@@ -1,7 +1,5 @@
 package com.zephyr;
 
-import org.w3c.dom.css.Rect;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
@@ -10,8 +8,11 @@ public class Rock extends Primitive {
     private double speed;
     private int width;
     private int height;
+    private int xPoly[] = {-12, 0, 12, 7, -7};
+    private int yPoly[] = {3, 12, 3, -12, -12};
+    private Polygon poly;
     private int rotation;
-    protected int strength = (int) Math.max(Math.random() * 5 - 2, 1);
+    protected int strength;
     private double rotationDelta;
     protected Boolean visible;
 
@@ -19,14 +20,14 @@ public class Rock extends Primitive {
         super(x, y);
         this.x = x;
         this.y = y;
-        this.strength = strength;
+        this.strength = (int) Math.max(Math.random() * 5 - 2, 1);
+        poly = new Polygon(xPoly, yPoly, xPoly.length);
         speed = (Math.random() * .1) + 1.3;
         width = (int) (Math.random() * 5) + 10;
         height = (int) (Math.random() * 5) + 10;
         rotation = (int) (Math.random() * 360);
         rotationDelta = -8 + (Math.random() * 16);
         visible = true;
-        System.out.println(strength);
     }
 
     public int getX() {
@@ -45,14 +46,23 @@ public class Rock extends Primitive {
         return height;
     }
 
+    public Polygon getPoly() {
+        return poly;
+    }
+
     public int getRotation() {
         return rotation;
     }
 
     public Shape getBounds() {
-        Rectangle r1 = new Rectangle(x, y, width, height);
-        AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(rotation), x + width / 2, y + height / 2);
-        return at.createTransformedShape(r1);
+        //TODO: Fix bounding box code
+
+        //Rectangle r1 = new Rectangle(x, y, width, height);
+
+        Polygon p1 = poly;
+
+        AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(rotation), x, y);
+        return at.createTransformedShape(p1);
     }
 
     public void move() {

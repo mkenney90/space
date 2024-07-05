@@ -11,14 +11,12 @@ import java.util.List;
 
 import javax.swing.*;
 
-
 public class Board extends JPanel implements ActionListener {
 
     private Timer timer;
     private SpaceShip spaceShip;
     private final int DELAY = 10;
     Controller cont;
-    SoundControl sound;
     private List<Star> stars;
     private List<Rock> rocks;
     private List<RockParticle> rockparts;
@@ -40,8 +38,7 @@ public class Board extends JPanel implements ActionListener {
         cont = new Controller(spaceShip);
         addKeyListener(cont);
 
-        sound = new SoundControl();
-        sound.playSound("startup.wav");
+        SoundControl.playSound("startup.wav");
 
         stars = new ArrayList<>();
         rocks = new ArrayList<>();
@@ -84,21 +81,23 @@ public class Board extends JPanel implements ActionListener {
 
         g2d.setPaint(new Color(255, 255, 150));
         for (Star s: stars) {
-            g2d.drawLine(s.getX(), s.getY(), s.getX(), s.getY());
+            g2d.drawLine(s.getX(), s.getY(), s.getX(), s.getY()-1);
         }
 
         for (Rock r: rocks) {
             if (r.strength > 1) {
                 g2d.setPaint(Color.ORANGE);
-                g2d.setStroke(new BasicStroke(3));
+                g2d.setStroke(new BasicStroke(2));
                 Rectangle r1 = new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight());
                 AffineTransform ar = AffineTransform.getRotateInstance(Math.toRadians(r.getRotation()), r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2);
                 g2d.draw(ar.createTransformedShape(r1));
             }
-            g2d.translate(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2);
+            g2d.translate(r.getX(), r.getY());
             g2d.rotate(Math.toRadians(r.getRotation()));
             g2d.setPaint(Color.GRAY);
             g2d.fillRect(-r.getWidth()/2, -r.getHeight()/2, r.getWidth(), r.getHeight());
+            g2d.setPaint(Color.BLUE);
+            g2d.fillPolygon(r.getPoly());
             g2d.setTransform(at);
         }
 
@@ -145,14 +144,16 @@ public class Board extends JPanel implements ActionListener {
             for (Rock r: rocks) {
 
                 Shape r2 = r.getBounds();
+
+                // check for laser collisions with asteroids
                 if (r2.intersects(r1)) {
                     if (r.strength > 1) {
-                        sound.playSound("shatter.wav");
+                        SoundControl.playSound("shatter.wav");
                     } else {
-                        sound.playSound("break.wav");
+                        SoundControl.playSound("break.wav");
                     }
                     l.setVisible(false);
-                    r.strength -= 1;
+                    r.strength -= spaceShip.getLaserStrength();
                     for (int i=0;i<4;i++) {
                         rockparts.add(new RockParticle(r.getX() + r.getWidth() / 2, r.getY() + r.getHeight() / 2, i));
                     }
