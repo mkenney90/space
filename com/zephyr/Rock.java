@@ -2,74 +2,189 @@ package com.zephyr;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 
-public class Rock extends Primitive {
+public class Rock extends Sprite {
+    private double xSpeed;
+    private double ySpeed;
+    private int radius;
+    private int mass;
+    private double impactForce;
 
-    private double speed;
-    private int width;
-    private int height;
-    private int xPoly[] = {-12, 0, 12, 7, -7};
-    private int yPoly[] = {3, 12, 3, -12, -12};
-    private Polygon poly;
-    private int rotation;
-    protected int strength;
+    private int points;
+    private int shadowPoints;
+    private int xCoords[];
+    private int yCoords[];
+    private int s_xCoords[];
+    private int s_yCoords[];
+
+    private int strength;
+    private double rotation;
     private double rotationDelta;
     protected Boolean visible;
 
-    public Rock(int x, int y) {
+    public Rock(int x, int y, int points) {
         super(x, y);
-        this.x = x;
-        this.y = y;
-        this.strength = (int) Math.max(Math.random() * 5 - 2, 1);
-        poly = new Polygon(xPoly, yPoly, xPoly.length);
-        speed = (Math.random() * .1) + 1.3;
-        width = (int) (Math.random() * 5) + 10;
-        height = (int) (Math.random() * 5) + 10;
+        this.points = points;
+        this.shadowPoints = (int) (points / 2) + 1;
+
+        strength = (int) Math.max(Math.random() * 4, 1);
+        radius = (int) (Math.random() * 10) + 15;
+        mass = radius / 10;
+
+        xCoords = new int[points];
+        yCoords = new int[points];
+        
+        // build the polygon based on the number of points passed to the constructor
+        for (int i=0;i<points;i++) {
+            double angle = i * (Math.PI / ((double)points / 2));
+            double cosValue = Math.cos(angle);
+            double sinValue = Math.sin(angle);
+            double randomOffset = Math.random() * 6 - 3;
+            
+            if (Math.random() < 0.1) {
+                xCoords[i] = (int) Math.round(cosValue * radius - 2 + randomOffset);
+                yCoords[i] = (int) Math.round(sinValue * radius - 2 + randomOffset);
+            } else {
+                xCoords[i] = (int) Math.round(cosValue * radius + randomOffset);
+                yCoords[i] = (int) Math.round(sinValue * radius + randomOffset);
+            }
+        }        
+
+        s_xCoords = new int[shadowPoints];
+        s_yCoords = new int[shadowPoints];
+
+        // build the rock's shadow
+        for (int i=0;i<shadowPoints;i++) {
+            s_xCoords[i] = xCoords[i];
+            s_yCoords[i] = yCoords[i];
+        }
+        s_xCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
+        s_yCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
+
+        xSpeed = 0;
+        ySpeed = Math.random() * 0.5 + 0.6;
+
         rotation = (int) (Math.random() * 360);
-        rotationDelta = -8 + (Math.random() * 16);
+        rotationDelta = (Math.random() * 8) - 4;
         visible = true;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
     public Polygon getPoly() {
-        return poly;
+        return new Polygon(xCoords, yCoords, points);
     }
 
-    public int getRotation() {
+    public int getRadius() {
+        return radius;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
+
+    public void setStrength(int newStrength) {
+        strength = newStrength;
+    }
+
+    public double getRotation() {
         return rotation;
     }
 
-    public Shape getBounds() {
-        //TODO: Fix bounding box code
+    public void setRotation(int newRotation) {
+        rotation = newRotation;
+    }
 
-        //Rectangle r1 = new Rectangle(x, y, width, height);
+    public void addRotation(double newDelta) {
+        rotationDelta += newDelta;
+    }
 
-        Polygon p1 = poly;
+    public double getImpactForce() {
+        return impactForce;
+    }
 
-        AffineTransform at = AffineTransform.getRotateInstance(Math.toRadians(rotation), x, y);
-        return at.createTransformedShape(p1);
+    public void handleCollision(Rock otherRock) {
+        double rif = impactForce;
+        double orif = otherRock.getImpactForce();
+
+        if (otherRock.getY() > y) {
+            otherRock.addSpeed('y', rif);
+            this.addSpeed('y', -orif);
+        } else {
+            otherRock.addSpeed('y', -rif);
+            this.addSpeed('y', orif);
+        }
+        if (otherRock.getX() > x) {
+            otherRock.addSpeed('x', rif);
+            this.addSpeed('x', -orif);
+        } else {
+            otherRock.addSpeed('x', -rif);
+            this.addSpeed('x', orif);
+        }
+    }
+
+    public void setSpeed(char axis, double newSpeed) {
+        if (axis == 'x') {
+            xSpeed = newSpeed;
+        } else {
+            ySpeed = newSpeed;
+        }
+    }
+
+    public void addSpeed(char axis, double deltaSpeed) {
+        if (axis == 'x') {
+            xSpeed += deltaSpeed;
+        } else {
+            ySpeed += deltaSpeed;
+        }
+    }
+    
+    public Area getBounds() {
+        int[] xRot = new int[points];
+        int[] yRot = new int[points];
+    
+        for (int i=0;i<points;i++) {
+            xRot[i] = xCoords[i];
+            yRot[i] = yCoords[i];
+        }
+        
+        Polygon p1 = new Polygon(xRot, yRot, points);
+        AffineTransform at = new AffineTransform();
+    
+        at.rotate(Math.toRadians(rotation), x, y);
+        at.translate(x, y);
+    
+        Area a1 = new Area(at.createTransformedShape(p1));
+        at.setToIdentity();
+        
+        return a1;
+    }
+    
+    public Area getShadowBounds() {
+        int[] xRot = new int[shadowPoints];
+        int[] yRot = new int[shadowPoints];
+    
+        for (int i=0;i<shadowPoints;i++) {
+            xRot[i] = s_xCoords[i];
+            yRot[i] = s_yCoords[i];
+        }
+        
+        Polygon p1 = new Polygon(xRot, yRot, shadowPoints);
+        AffineTransform at = new AffineTransform();
+    
+        at.rotate(Math.toRadians(rotation), x, y);
+        at.translate(x, y);
+    
+        Area a1 = new Area(at.createTransformedShape(p1));
+        at.setToIdentity();
+        
+        return a1;
     }
 
     public void move() {
         rotation += rotationDelta;
-        y = (int) (y + speed);
+        x = (x + (float) xSpeed);
+        y = (y + (float) ySpeed);
+        impactForce = (mass * (xSpeed + ySpeed)) / 5;
         setVisible(strength > 0);
     }
-
 }
-

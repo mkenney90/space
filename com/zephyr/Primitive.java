@@ -1,7 +1,6 @@
 package com.zephyr;
 
 public class Primitive {
-
     protected int x;
     protected int y;
     protected int width;
@@ -9,7 +8,6 @@ public class Primitive {
     protected boolean visible;
 
     public Primitive(int x, int y) {
-
         this.x = x;
         this.y = y;
         visible = true;

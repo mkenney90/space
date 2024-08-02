@@ -1,7 +1,5 @@
 package com.zephyr;
 
-import sun.applet.Main;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;

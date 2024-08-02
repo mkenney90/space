@@ -4,29 +4,31 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 public class Sprite {
-
-    protected int x;
-    protected int y;
+    protected float x;
+    protected float y;
     protected int width;
     protected int height;
     protected boolean visible;
     protected Image image;
 
     public Sprite(int x, int y) {
+        this.x = x;
+        this.y = y;
+        visible = true;
+    }
 
+    public Sprite(float x, float y) {
         this.x = x;
         this.y = y;
         visible = true;
     }
 
     protected void loadImage(String imageName) {
-
         ImageIcon ii = new ImageIcon(imageName);
         image = ii.getImage();
     }
     
     protected void getImageDimensions() {
-
         width = image.getWidth(null);
         height = image.getHeight(null);
     }    
@@ -35,12 +37,28 @@ public class Sprite {
         return image;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
+    }    
+    
+    public int getXInt() {
+        return (int) x;
+    }
+
+    public int getYInt() {
+        return (int) y;
+    }
+
+    public int getDistance(Sprite other) {
+        return (int) Math.sqrt(Math.pow(x - other.getX(), 2) + Math.pow(y - other.getY(), 2));
+    }
+
+    public void move() {
+
     }
 
     public boolean isVisible() {

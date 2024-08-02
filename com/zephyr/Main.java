@@ -3,19 +3,19 @@ package com.zephyr;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-public class MovingSpriteEx extends JFrame {
+public class Main extends JFrame {
+    public static final int SCREEN_WIDTH = 1200;
+    public static final int SCREEN_HEIGHT = 800;
 
-    public MovingSpriteEx() {
-        
+    public Main() {
         initUI();
     }
     
     private void initUI() {
-
         add(new Board());
 
         setTitle("Generic Space Shooter 2k19");
-        setSize(1200, 800);
+        setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         
         setLocationRelativeTo(null);
         setResizable(false);
@@ -23,9 +23,8 @@ public class MovingSpriteEx extends JFrame {
     }
 
     public static void main(String[] args) {
-
         EventQueue.invokeLater(() -> {
-            MovingSpriteEx ex = new MovingSpriteEx();
+            Main ex = new Main();
             ex.setVisible(true);
         });
     }

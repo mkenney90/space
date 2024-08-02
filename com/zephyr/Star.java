@@ -1,6 +1,6 @@
 package com.zephyr;
 
-public class Star extends Primitive {
+public class Star extends Sprite {
 
     private double speed;
     protected Boolean visible;
@@ -11,14 +11,6 @@ public class Star extends Primitive {
         this.y = y;
         speed = (Math.random() * 1.1) + 3;
         visible = true;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     public void move() {
