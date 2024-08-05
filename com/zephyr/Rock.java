@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
+import java.awt.geom.Line2D;
+
 public class Rock extends Sprite {
     private double xSpeed;
     private double ySpeed;
@@ -11,12 +13,16 @@ public class Rock extends Sprite {
     private int mass;
     private double impactForce;
 
+    private int shieldLevel;
+    private Boolean damaged;
     private int points;
     private int shadowPoints;
     private int xCoords[];
     private int yCoords[];
     private int s_xCoords[];
     private int s_yCoords[];
+    private int dxCoords[];
+    private int dyCoords[];
 
     private int strength;
     private double rotation;
@@ -28,6 +34,8 @@ public class Rock extends Sprite {
         this.points = points;
         this.shadowPoints = (int) (points / 2) + 1;
 
+        damaged = false;
+        shieldLevel = (Math.random() > .80 ? 1 : 0);
         strength = (int) Math.max(Math.random() * 4, 1);
         radius = (int) (Math.random() * 10) + 15;
         mass = radius / 10;
@@ -62,6 +70,19 @@ public class Rock extends Sprite {
         s_xCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
         s_yCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
 
+        // damage crack line coords
+        dxCoords = new int[4];
+        dyCoords = new int[4];
+
+        dxCoords[0] = xCoords[0];
+        dyCoords[0] = yCoords[0];
+        dxCoords[1] = 2;
+        dyCoords[1] = 2;
+        dxCoords[2] = -3;
+        dyCoords[2] = -3;
+        dxCoords[3] = xCoords[3];
+        dyCoords[3] = yCoords[3];
+
         xSpeed = 0;
         ySpeed = Math.random() * 0.5 + 0.6;
 
@@ -84,6 +105,15 @@ public class Rock extends Sprite {
 
     public void setStrength(int newStrength) {
         strength = newStrength;
+    }
+
+    public Boolean getDamaged() {
+        return damaged;
+    }
+
+    public void takeDamage(int damage) {
+        strength -= damage;
+        damaged = true;
     }
 
     public double getRotation() {
@@ -178,6 +208,28 @@ public class Rock extends Sprite {
         at.setToIdentity();
         
         return a1;
+    }
+
+    public Shape[] getDamageCrackLine() {
+        AffineTransform at = new AffineTransform();
+        
+        Line2D[] dLines = {
+            new Line2D.Double(dxCoords[0], dyCoords[0], dxCoords[1], dyCoords[1]),
+            new Line2D.Double(dxCoords[1], dyCoords[1], dxCoords[2], dyCoords[2]),
+            new Line2D.Double(dxCoords[2], dyCoords[2], dxCoords[3], dyCoords[3])
+        };
+        
+        at.rotate(Math.toRadians(rotation), x, y);
+        at.translate(x, y);
+        
+        Shape[] damageCracks = {
+            at.createTransformedShape(dLines[0]),
+            at.createTransformedShape(dLines[1]),
+            at.createTransformedShape(dLines[2]),
+        };
+        
+        at.setToIdentity();
+        return damageCracks;
     }
 
     public void move() {

@@ -92,7 +92,13 @@ public class Board extends JPanel implements ActionListener {
             g2d.fill(r.getBounds());
             g2d.setPaint(Color.gray);
             g2d.fill(r.getShadowBounds());
-            g2d.setPaint(Color.red);
+            if (r.getDamaged()) {
+                g2d.setPaint(Color.black);
+                Shape[] dLines = r.getDamageCrackLine();
+                for (int i=0;i<dLines.length;i++) {
+                    g2d.draw(dLines[i]);
+                }
+            }
             // g2d.fillOval(r.getXInt(), r.getYInt(), 2, 2);
             if (r.getStrength() > 1) {
                 // draw outline on rocks with shield
@@ -133,6 +139,7 @@ public class Board extends JPanel implements ActionListener {
             while (Math.abs(rx - lastXValue) < 10) {
                 rx = 25 + (int) Math.round(Math.random() * 550);
             }
+            // all rocks have a minimum of 6 sides
             int points = (int) (Math.random() * 8) + 6;
             lastRock = (!rocks.isEmpty() ? rocks.getLast() : null);
             Rock newRock = new Rock(rx, -10 + (int) Math.round(Math.random() * - 40 ), points);
@@ -171,6 +178,7 @@ public class Board extends JPanel implements ActionListener {
 
                 // check for laser collisions with asteroids
                 if (r2.intersects(r1)) {
+                    r.takeDamage(l.strength);
                     if (r.getStrength() > 1) {
                         //SoundControl.playSound("shatter.wav");
                         score += 25;
@@ -189,7 +197,7 @@ public class Board extends JPanel implements ActionListener {
                         score += 100;
                     }
                     l.setVisible(false);
-                    r.setStrength(r.getStrength() - spaceShip.getLaserStrength());
+                    r.takeDamage(spaceShip.getLaserStrength());
                     for (int i=0;i<8;i++) {
                         double randSize = 6 + Math.random() * 3;
                         double randAngle = Math.random() * 30;
