@@ -1,15 +1,11 @@
 package com.zephyr;
 
-import javax.swing.JLabel;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import java.util.HashMap;
 
 public class Controller implements KeyListener {
-    private JLabel keyManager;
     private HashMap<Integer, Boolean> keys;
     private SpaceShip player;
 

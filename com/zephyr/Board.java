@@ -12,7 +12,7 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
     private Timer timer;
-    private int score = 0;
+    private int score = 9990;
     private SpaceShip spaceShip;
     private final int DELAY = 10;
     Controller controller;
@@ -24,6 +24,11 @@ public class Board extends JPanel implements ActionListener {
     private int spaceShipParticleTimer = 0;
     private int lastXValue = 0;
     private int rx = 0;
+
+    private final Color LASER_COLOR = new Color(66, 245, 108, 107);
+    private final Color STAR_COLOR = new Color(255, 255, 150);
+    private final int UI_FONT_SIZE = 20;
+    private final int MAX_SCORE_LENGTH = 5;
 
     public Board() {
         initBoard();
@@ -58,15 +63,9 @@ public class Board extends JPanel implements ActionListener {
     
     private void doDrawing(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
+        AffineTransform at = g2d.getTransform(); // get default transform
 
-        g2d.setColor(Color.white);
-        g2d.setFont(new Font("Fixedsys", Font.BOLD, 30));
-        g2d.drawString("" + score, 10, 30);
-
-
-        g2d.rotate(0);
         g2d.scale(2.0, 2.0);
-        AffineTransform at = g2d.getTransform(); // set default transform
 
         g2d.setPaint(new Color(175, 255, 255, 50));
         g2d.drawLine(300,0,300,600);
@@ -75,14 +74,14 @@ public class Board extends JPanel implements ActionListener {
 
         for (Laser l : lasers) {
             if (l.strength > 1) {
-                g2d.setPaint(new Color(66, 245, 108, 107));
+                g2d.setPaint(LASER_COLOR);
                 g2d.drawRect(l.getXInt()-1, l.getYInt()-1,3, l.size + 2);
             }
             g2d.setPaint(Color.red);
             g2d.drawRect(l.getXInt(), l.getYInt(),1, l.size);
         }
 
-        g2d.setPaint(new Color(255, 255, 150));
+        g2d.setPaint(STAR_COLOR);
         for (Star s: stars) {
             g2d.drawLine(s.getXInt(), s.getYInt(), s.getXInt(), s.getYInt()-1);
         }
@@ -93,21 +92,20 @@ public class Board extends JPanel implements ActionListener {
             g2d.setPaint(Color.gray);
             g2d.fill(r.getShadowBounds());
             if (r.getDamaged()) {
-                g2d.setPaint(Color.black);
+                g2d.setPaint(Color.darkGray);
                 Shape[] dLines = r.getDamageCrackLine();
                 for (int i=0;i<dLines.length;i++) {
                     g2d.draw(dLines[i]);
                 }
             }
-            // g2d.fillOval(r.getXInt(), r.getYInt(), 2, 2);
-            if (r.getStrength() > 1) {
-                // draw outline on rocks with shield
-                g2d.setPaint(Color.yellow);
-                if (r.getStrength() > 2) {
-                    g2d.setPaint(Color.red);
-                }
-                g2d.draw(r.getBounds());
-            }
+            // if (r.getStrength() > 1) {
+            //     // draw outline on rocks with shield
+            //     g2d.setPaint(Color.yellow);
+            //     if (r.getStrength() > 2) {
+            //         g2d.setPaint(Color.red);
+            //     }
+            //     g2d.draw(r.getBounds());
+            // }
         }
 
         for (Particle p: particles) {
@@ -120,6 +118,22 @@ public class Board extends JPanel implements ActionListener {
         g2d.rotate(Math.toRadians(spaceShip.getRotation()));
         g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
 
+        // draw the score text on screen
+        g2d.shear(-0.15, 0); // set shear effect
+        g2d.setPaint(Color.black);
+        g2d.fillRect(0, 0, 125, 30);
+        g2d.setFont(new Font("Verdana", Font.BOLD, UI_FONT_SIZE));
+        g2d.setColor(Color.white);
+        g2d.drawString(String.format("%05d",score), 10, 20);
+        g2d.setColor(Color.gray);
+        int numZeroes = MAX_SCORE_LENGTH - Integer.toString(score).length();
+
+        if (numZeroes > 0) {
+            String scoreFormat = "%0" + numZeroes + "d";
+            g2d.drawString(String.format(scoreFormat,0), 10, 20);
+            g2d.setTransform(at); // undo shear effect
+        }
+        
         // reset transforms
         g2d.setTransform(at);
     }
@@ -139,8 +153,8 @@ public class Board extends JPanel implements ActionListener {
             while (Math.abs(rx - lastXValue) < 10) {
                 rx = 25 + (int) Math.round(Math.random() * 550);
             }
-            // all rocks have a minimum of 6 sides
-            int points = (int) (Math.random() * 8) + 6;
+            // all rocks have a minimum of 8 sides
+            int points = (int) (Math.random() * 8) + 8;
             lastRock = (!rocks.isEmpty() ? rocks.getLast() : null);
             Rock newRock = new Rock(rx, -10 + (int) Math.round(Math.random() * - 40 ), points);
             rocks.add(newRock);
