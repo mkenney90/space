@@ -39,12 +39,12 @@ public class Rock extends Sprite {
         ySpeed = Math.random() * 0.5 + 0.6;
 
         rotation = (int) (Math.random() * 360);
-        rotationDelta = (Math.random() * 8) - 4;
+        rotationDelta = Util.randomRange(-4, 4);
         visible = true;
 
         damaged = false;
         shieldLevel = (Math.random() > .80 ? 1 : 0);
-        radius = (int) (Math.random() * 10) + 15;
+        radius = (int) Util.randomRange(15, 25);
         maxStrength = (int) Math.ceil(radius / 6);
         strength = maxStrength;
         mass = radius / 10;
@@ -57,7 +57,7 @@ public class Rock extends Sprite {
             double angle = i * (Math.PI / ((double)points / 2));
             double cosValue = Math.cos(angle);
             double sinValue = Math.sin(angle);
-            double randomOffset = Math.random() * 6 - 3;
+            double randomOffset = Util.randomRange(-3, 3);
             
             if (Math.random() < 0.1) {
                 xCoords[i] = (int) Math.round(cosValue * radius - 2 + randomOffset);
@@ -77,8 +77,8 @@ public class Rock extends Sprite {
             sxCoords[i] = xCoords[i+shadowPointStartOffset];
             syCoords[i] = yCoords[i+shadowPointStartOffset];
         }
-        sxCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
-        syCoords[shadowPoints-1] = (int) Math.random() * 6 - 3;
+        sxCoords[shadowPoints-1] = Util.randomRange(-3, 3);
+        syCoords[shadowPoints-1] = Util.randomRange(-3, 3);
 
         // damage crack line coords
         dxCoords = new int[4];
@@ -207,7 +207,7 @@ public class Rock extends Sprite {
 
     public void setDamageCracksCoords(int[] xCoords, int[] yCoords, int radius) {
         int maxCrackLineOffset = radius / 3;
-        int crackLineOffset = (int) (Math.random() * maxCrackLineOffset) + maxCrackLineOffset / 2;
+        int crackLineOffset = Util.randomRange(maxCrackLineOffset / 2, maxCrackLineOffset);
 
         int[][] coords = {
             {xCoords[0], yCoords[0]},

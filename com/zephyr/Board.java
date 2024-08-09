@@ -12,7 +12,7 @@ import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener {
     private Timer timer;
-    private int score = 9990;
+    private int score = 0;
     private SpaceShip spaceShip;
     private final int DELAY = 10;
     Controller controller;
