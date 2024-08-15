@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import com.zephyr.Particle.LaserParticle;
 import com.zephyr.src.resources.StateMachine;
 
 public class Board extends JPanel implements ActionListener {
@@ -125,7 +126,7 @@ public class Board extends JPanel implements ActionListener {
         // draw the score text on screen
         g2d.shear(-0.15, 0); // set shear effect
         g2d.setPaint(Color.black);
-        g2d.fillRect(0, 0, 125, 30);
+        g2d.fillRect(0, 0, 100, 30);
         g2d.setFont(new Font("Verdana", Font.BOLD, UI_FONT_SIZE));
         g2d.setColor(Color.white);
         g2d.drawString(String.format("%05d",score), 10, 20);
@@ -217,16 +218,18 @@ public class Board extends JPanel implements ActionListener {
                             r.addSpeed('y', -0.12);
                         } else {
                             //SoundControl.playSound("break.wav");
+                            for (int i=0;i<8;i++) {
+                                double randSize = 6 + Math.random() * 3;
+                                float randAngle = (float) Math.random() * 30f;
+                                int randOffset = (int) (Math.random() * 10);
+                                particles.add(new Particle(r.getXInt() + randOffset, r.getYInt() + randOffset, 360 / 8 * i, randSize, randAngle));
+                            }
                             score += 100;
                         }
                         l.setVisible(false);
                         r.takeDamage(spaceShip.getLaserStrength());
-                        for (int i=0;i<8;i++) {
-                            double randSize = 6 + Math.random() * 3;
-                            double randAngle = Math.random() * 30;
-                            int randOffset = (int) (Math.random() * 10);
-                            particles.add(new Particle(r.getXInt() + randOffset, r.getYInt() + randOffset, 360 / 8 * i, randSize, randAngle));
-                        }
+                        particles.add(new LaserParticle(l.getXInt(), l.getYInt(), 0));
+                    
                     }
                 }
                 l.update();
@@ -261,7 +264,7 @@ public class Board extends JPanel implements ActionListener {
             rocks.removeIf(r -> (r.getY() > 400 || !r.isVisible()));
 
             particles.forEach(Particle::move);
-            particles.removeIf(p -> p.getSize() < 0);
+            particles.removeIf(p -> p.getSize() < 0 || !p.isVisible());
 
             rockCooldown = Math.max(rockCooldown - 1, 0);
 
