@@ -7,19 +7,20 @@ import com.zephyr.src.resources.StateMachine;
 
 public class Main extends JFrame {
     public static final int SCREEN_WIDTH = 1200;
-    public static final int SCREEN_HEIGHT = 800;
+    public static final int SCREEN_HEIGHT = 768;
     public StateMachine fsm;
 
     public Main() {
         fsm = new StateMachine();
-        initUI();
+        initGameWindow();
     }
     
-    private void initUI() {
-        add(new Board(fsm));
+    private void initGameWindow() {  
+        Board gameBoard = new Board(SCREEN_WIDTH, SCREEN_HEIGHT, fsm); 
 
         setTitle("Generic Space Shooter 2k19");
-        setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        setContentPane(gameBoard);
+        pack();
         
         setLocationRelativeTo(null);
         setResizable(false);

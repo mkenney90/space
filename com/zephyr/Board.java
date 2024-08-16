@@ -34,14 +34,15 @@ public class Board extends JPanel implements ActionListener {
 
     public StateMachine fsm;
 
-    public Board(StateMachine fsm) {
-        initBoard(fsm);
+    public Board(int width, int height, StateMachine fsm) {
+        initBoard(width, height, fsm);
     }
 
-    private void initBoard(StateMachine fsm) {
+    private void initBoard(int width, int height, StateMachine fsm) {
         this.fsm = fsm;
-        setBackground(Color.black);
+        setPreferredSize(new Dimension(width, height));
 	    setFocusable(true);
+        setBackground(Color.black);
 
         spaceShip = new SpaceShip(288, 300);
         controller = new Controller(spaceShip, fsm);
@@ -73,7 +74,7 @@ public class Board extends JPanel implements ActionListener {
         g2d.scale(2.0, 2.0);
 
         g2d.setPaint(new Color(175, 255, 255, 30));
-        g2d.drawLine(300,0,300,600);
+        g2d.drawLine(300,0,300,340);
 
         List<Laser> lasers = spaceShip.getLasers();
 
@@ -122,6 +123,7 @@ public class Board extends JPanel implements ActionListener {
 
         g2d.rotate(Math.toRadians(spaceShip.getRotation()));
         g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
+        //g2d.drawRect(spaceShip.getXInt(), spaceShip.getYInt(), spaceShip.getWidth(), spaceShip.getHeight());
 
         // draw the score text on screen
         g2d.shear(-0.15, 0); // set shear effect

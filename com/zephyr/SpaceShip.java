@@ -86,8 +86,8 @@ public class SpaceShip extends Sprite {
     }
 
     public void move() {
-        x = Math.max(Math.min(x + dx, 562),10);
-        y = Math.max(Math.min(y + dy, 332), 24);
+        x = Math.max(Math.min(x + dx, 572), 4);
+        y = Math.max(Math.min(y + dy, 356), 4);
     }
 
     public void fireLaser() {
