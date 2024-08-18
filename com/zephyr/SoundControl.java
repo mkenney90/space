@@ -11,10 +11,12 @@ public class SoundControl {
     }
 
     public static void playSound(String filename) {
+        String path = "com\\zephyr\\src\\resources\\sounds\\" + filename;
+
         try {
-            Clip clip = AudioSystem.getClip();
-            File soundFile = new File("C:\\Users\\Mike\\Documents\\dev\\space\\com\\zephyr\\src\\resources\\sounds\\" + filename);
+            File soundFile = new File(path);
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.start();
         } catch (Exception e) {

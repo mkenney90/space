@@ -3,7 +3,7 @@ package com.zephyr;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-import com.zephyr.src.resources.StateMachine;
+import com.zephyr.states.StateMachine;
 
 public class Main extends JFrame {
     public static final int SCREEN_WIDTH = 1200;
@@ -14,14 +14,14 @@ public class Main extends JFrame {
         fsm = new StateMachine();
         initGameWindow();
     }
-    
-    private void initGameWindow() {  
-        Board gameBoard = new Board(SCREEN_WIDTH, SCREEN_HEIGHT, fsm); 
+
+    private void initGameWindow() {
+        Board gameBoard = new Board(SCREEN_WIDTH, SCREEN_HEIGHT, fsm);
 
         setTitle("Generic Space Shooter 2k19");
         setContentPane(gameBoard);
         pack();
-        
+
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

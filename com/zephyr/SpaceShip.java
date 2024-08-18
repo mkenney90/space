@@ -37,9 +37,12 @@ public class SpaceShip extends Sprite {
 
     private void loadImages() {
         try {
-            sprites.put("neutral", ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\spaceship.png")));
-            sprites.put("left", ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\spaceship_left.png")));
-            sprites.put("right", ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\spaceship_right.png")));
+            sprites.put("neutral",
+                    ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\images\\spaceship.png")));
+            sprites.put("left",
+                    ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\images\\spaceship_left.png")));
+            sprites.put("right",
+                    ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\images\\spaceship_right.png")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,11 +66,11 @@ public class SpaceShip extends Sprite {
         }
         ix += accelX;
         dx = ix;
-        
+
         if (Math.abs(dx) > maxDX) {
             dx = maxDX * Math.signum(dx);
-        }        
-        
+        }
+
         if (Math.abs(iy) > Math.abs(accelY)) {
             iy *= 0.92;
         }
@@ -76,11 +79,11 @@ public class SpaceShip extends Sprite {
         }
         iy += accelY;
         dy = iy;
-        
+
         if (Math.abs(dy) > maxDY) {
             dy = maxDY * Math.signum(dy);
         }
-        
+
         laserTimer = Math.max(laserTimer - 1, 0);
         image = sprites.get(direction);
     }
@@ -91,8 +94,9 @@ public class SpaceShip extends Sprite {
     }
 
     public void fireLaser() {
-        if (laserTimer > 0) return;
-        lasers.add(new Laser((int)x + getWidth()/2, (int)y + 4, 6, laserStrength));
+        if (laserTimer > 0)
+            return;
+        lasers.add(new Laser((int) x + getWidth() / 2, (int) y + 4, 6, laserStrength));
         SoundControl.playSound("laser1.wav");
         laserTimer = laserDelay;
     }
@@ -152,6 +156,5 @@ public class SpaceShip extends Sprite {
     public double getRotation() {
         return rotation;
     }
-
 
 }

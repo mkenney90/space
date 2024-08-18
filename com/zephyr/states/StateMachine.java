@@ -1,4 +1,4 @@
-package com.zephyr.src.resources;
+package com.zephyr.states;
 
 import com.zephyr.GameState;
 
