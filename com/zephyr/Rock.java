@@ -15,8 +15,8 @@ public class Rock extends Sprite {
 
     private int shieldLevel;
     private Boolean damaged;
-    private int points;
-    private int shadowPoints;
+    private int numPoints;
+    private int numShadowPoints;
     private int xCoords[];
     private int yCoords[];
     private int sxCoords[];
@@ -32,8 +32,8 @@ public class Rock extends Sprite {
 
     public Rock(int x, int y, int points) {
         super(x, y);
-        this.points = points;
-        this.shadowPoints = (int) (points / 2) + 1;
+        this.numPoints = points;
+        this.numShadowPoints = numPoints - 1;
         
         xSpeed = 0;
         ySpeed = Math.random() * 0.5 + 0.6;
@@ -50,11 +50,11 @@ public class Rock extends Sprite {
         mass = radius / 10;
 
         // build the polygon based on the number of points passed to the constructor
-        xCoords = new int[points];
-        yCoords = new int[points];
+        xCoords = new int[numPoints];
+        yCoords = new int[numPoints];
         
-        for (int i=0;i<points;i++) {
-            double angle = i * (Math.PI / ((double)points / 2));
+        for (int i=0;i<numPoints;i++) {
+            double angle = i * (Math.PI / ((double)numPoints / 2));
             double cosValue = Math.cos(angle);
             double sinValue = Math.sin(angle);
             double randomOffset = Util.randomRange(-3, 3);
@@ -68,27 +68,16 @@ public class Rock extends Sprite {
             }
         }        
 
-        // build the rock's shadow polygon
-        sxCoords = new int[shadowPoints];
-        syCoords = new int[shadowPoints];
-
-        int shadowPointStartOffset = (int) Math.random() * 2;
-        for (int i=0;i<shadowPoints;i++) {
-            sxCoords[i] = xCoords[i+shadowPointStartOffset];
-            syCoords[i] = yCoords[i+shadowPointStartOffset];
-        }
-        sxCoords[shadowPoints-1] = Util.randomRange(-3, 3);
-        syCoords[shadowPoints-1] = Util.randomRange(-3, 3);
-
         // damage crack line coords
         dxCoords = new int[4];
         dyCoords = new int[4];
 
+        setShadowCoords(xCoords, yCoords);
         setDamageCracksCoords(xCoords, yCoords, radius);
     }
 
     public Polygon getPoly() {
-        return new Polygon(xCoords, yCoords, points);
+        return new Polygon(xCoords, yCoords, numPoints);
     }
 
     public int getRadius() {
@@ -165,15 +154,15 @@ public class Rock extends Sprite {
     }
     
     public Area getBounds() {
-        int[] xRot = new int[points];
-        int[] yRot = new int[points];
+        int[] xRot = new int[numPoints];
+        int[] yRot = new int[numPoints];
     
-        for (int i=0;i<points;i++) {
+        for (int i=0;i<numPoints;i++) {
             xRot[i] = xCoords[i];
             yRot[i] = yCoords[i];
         }
         
-        Polygon p1 = new Polygon(xRot, yRot, points);
+        Polygon p1 = new Polygon(xRot, yRot, numPoints);
         AffineTransform at = new AffineTransform();
     
         at.rotate(Math.toRadians(rotation), x, y);
@@ -186,15 +175,15 @@ public class Rock extends Sprite {
     }
     
     public Area getShadowBounds() {
-        int[] xRot = new int[shadowPoints];
-        int[] yRot = new int[shadowPoints];
+        int[] xRot = new int[numShadowPoints];
+        int[] yRot = new int[numShadowPoints];
     
-        for (int i=0;i<shadowPoints;i++) {
+        for (int i=0;i<numShadowPoints;i++) {
             xRot[i] = sxCoords[i];
             yRot[i] = syCoords[i];
         }
         
-        Polygon p1 = new Polygon(xRot, yRot, shadowPoints);
+        Polygon p1 = new Polygon(xRot, yRot, numShadowPoints);
         AffineTransform at = new AffineTransform();
     
         at.rotate(Math.toRadians(rotation), x, y);
@@ -203,6 +192,27 @@ public class Rock extends Sprite {
         Area a1 = new Area(at.createTransformedShape(p1));
         
         return a1;
+    }
+
+    public void setShadowCoords(int[] xCoords, int[] yCoords) {
+        // Initialize shadow coordinates array
+        sxCoords = new int[numShadowPoints];
+        syCoords = new int[numShadowPoints];
+        
+        // Number of points to modify for shadow effect
+        int numShadowInsidePoints = numShadowPoints / 2 - 1;
+        
+        // Loop to populate shadow coordinates
+        for (int i = 0; i < numShadowPoints; i++) {
+            if (i >= numShadowPoints - numShadowInsidePoints) {
+                int index = numShadowPoints - i;
+                sxCoords[i] = xCoords[index];
+                syCoords[i] = yCoords[index] - Util.randomRange(5, 10);
+            } else {
+                sxCoords[i] = xCoords[i];
+                syCoords[i] = yCoords[i];
+            }
+        }
     }
 
     public void setDamageCracksCoords(int[] xCoords, int[] yCoords, int radius) {
