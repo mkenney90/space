@@ -32,8 +32,8 @@ public class Rock extends Sprite {
 
     public Rock(int x, int y, int points) {
         super(x, y);
-        this.numPoints = points;
-        this.numShadowPoints = numPoints - 1;
+        numPoints = points;
+        numShadowPoints = numPoints - 1;
         
         xSpeed = 0;
         ySpeed = Math.random() * 0.5 + 0.6;
@@ -233,7 +233,7 @@ public class Rock extends Sprite {
     }
 
     // creates 3 lines to draw and rotates them to match the rock's rotation
-    public Shape[] getDamageCrackLine() {
+    public Shape[] getDamageCrackLines() {
         AffineTransform at = new AffineTransform();
         
         Line2D[] dLines = {

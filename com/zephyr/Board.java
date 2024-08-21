@@ -99,7 +99,7 @@ public class Board extends JPanel implements ActionListener {
             g2d.fill(r.getShadowBounds());
             if (r.getDamaged()) {
                 g2d.setPaint(Color.darkGray);
-                Shape[] dLines = r.getDamageCrackLine();
+                Shape[] dLines = r.getDamageCrackLines();
                 for (int i = 0; i < dLines.length; i++) {
                     g2d.draw(dLines[i]);
                 }
@@ -192,9 +192,9 @@ public class Board extends JPanel implements ActionListener {
                         0.5,
                         90,
                         6,
-                        0.99,
+                        -0.99,
                         true,
-                        Color.yellow,
+                        Util.flameColor(),
                         1.0f,
                         0));
             }
