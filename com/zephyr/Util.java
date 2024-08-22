@@ -30,7 +30,7 @@ public final class Util {
     }
     public static Color flameColor() {
         int intensity = randomRange(0, 2);
-        int _r = 255, _g = 175 + intensity * 35, _b = intensity * 120, _a = 200;
+        int _r = 255, _g = 175 + intensity * 40, _b = intensity * 120, _a = 200;
 
         return new Color(_r, _g, _b, _a);
     }

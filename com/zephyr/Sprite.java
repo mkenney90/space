@@ -3,7 +3,7 @@ package com.zephyr;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
-public class Sprite {
+abstract class Sprite {
     protected float x;
     protected float y;
     protected int width;

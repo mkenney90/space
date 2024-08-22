@@ -11,10 +11,11 @@ import java.util.List;
 import javax.swing.*;
 
 import com.zephyr.Particle.LaserParticle;
-import com.zephyr.states.StateMachine;
+import com.zephyr.states.GameState;
+import com.zephyr.states.PlayState;
+import com.zephyr.states.StateManager;
 
 public class Board extends JPanel implements ActionListener {
-
     private Timer timer;
     private int score = 0;
     private SpaceShip spaceShip;
@@ -32,20 +33,20 @@ public class Board extends JPanel implements ActionListener {
     private final int UI_FONT_SIZE = 20;
     private final int MAX_SCORE_LENGTH = 5;
 
-    public StateMachine fsm;
+    public StateManager fsm;
+    private PlayState playState;
 
-    public Board(int width, int height, StateMachine fsm) {
-        initBoard(width, height, fsm);
+    public Board(int width, int height) {
+        initBoard(width, height);
     }
 
-    private void initBoard(int width, int height, StateMachine fsm) {
-        this.fsm = fsm;
+    private void initBoard(int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         setBackground(Color.black);
 
         spaceShip = new SpaceShip(288, 300);
-        controller = new Controller(spaceShip, fsm);
+        controller = new Controller(spaceShip);
         addKeyListener(controller);
 
         SoundControl.playSound("startup.wav");
@@ -53,6 +54,8 @@ public class Board extends JPanel implements ActionListener {
         stars = new ArrayList<>();
         rocks = new ArrayList<>();
         particles = new ArrayList<>();
+
+        playState = new PlayState(fsm, this);
 
         timer = new Timer(DELAY, this);
         timer.start();
@@ -142,13 +145,13 @@ public class Board extends JPanel implements ActionListener {
         }
         g2d.shear(0.15, 0); // undo shear effect
 
-        if (fsm.currentState == GameState.PAUSED) {
-            g2d.setPaint(Color.black);
-            g2d.fillRect(200, 175, 225, 50);
-            g2d.setFont(new Font("Verdana", Font.BOLD, UI_FONT_SIZE));
-            g2d.setColor(Color.white);
-            g2d.drawString("- PAUSE -", 245, 210);
-        }
+        // if (fsm.currentState == PlayState) {
+        //     g2d.setPaint(Color.black);
+        //     g2d.fillRect(200, 175, 225, 50);
+        //     g2d.setFont(new Font("Verdana", Font.BOLD, UI_FONT_SIZE));
+        //     g2d.setColor(Color.white);
+        //     g2d.drawString("- PAUSE -", 245, 210);
+        // }
 
         // reset transforms
         g2d.setTransform(at);
@@ -161,7 +164,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void step() {
         controller.handleInput();
-        if (fsm.currentState == GameState.PLAY) {
+        if (fsm.currentState == State.PlayState) {
 
             // generate star field
             if (Math.random() * 100 < 10) {
@@ -175,8 +178,8 @@ public class Board extends JPanel implements ActionListener {
                     newRx = 25 + (int) (Math.random() * 550);
                 } while (Math.abs(newRx - lastXValue) < 10);
                 // all rocks have a minimum of 8 sides
-                int points = (int) (Math.random() * 8) + 8;
-                Rock newRock = new Rock(newRx, -10 + (int) Math.round(Math.random() * -40), points);
+                int points = Util.randomRange(8, 16);
+                Rock newRock = new Rock(newRx, -35, points);
                 rocks.add(newRock);
                 lastXValue = newRx;
                 rockCooldown = 60;
@@ -264,7 +267,7 @@ public class Board extends JPanel implements ActionListener {
                 }
                 r.move();
             }
-            rocks.removeIf(r -> (r.getY() > 400 || !r.isVisible()));
+            rocks.removeIf(r -> (r.getY() > 425 || !r.isVisible()));
 
             particles.forEach(Particle::move);
             particles.removeIf(p -> p.getSize() < 0 || !p.isVisible());
@@ -275,5 +278,60 @@ public class Board extends JPanel implements ActionListener {
             spaceShip.tick();
         }
         repaint();
+    }
+
+    public Controller getController() {
+        return controller;
+    }
+    public List<Star> getStars() {
+        return stars;
+    }
+
+    public List<Rock> getRocks() {
+        return rocks;
+    }
+
+    public List<Particle> getParticles() {
+        return particles;
+    }
+
+    public SpaceShip getSpaceShip() {
+        return spaceShip;
+    }
+
+    public int getRockCooldown() {
+        return rockCooldown;
+    }
+
+    public void setRockCooldown(int rockCooldown) {
+        this.rockCooldown = rockCooldown;
+    }
+
+    public int getSpaceShipParticleTimer() {
+        return spaceShipParticleTimer;
+    }
+
+    public void incrementSpaceShipParticleTimer() {
+        this.spaceShipParticleTimer++;
+    }
+
+    public void setLastXValue(int lastXValue) {
+        this.lastXValue = lastXValue;
+    }
+
+    public int getLastXValue() {
+        return lastXValue;
+    }
+
+    public void addScore(int points) {
+        this.score += points;
+    }
+
+    public void setPlayState(PlayState playState) {
+        this.playState = playState;
+    }
+
+    public PlayState getPlayState() {
+        return playState;
     }
 }

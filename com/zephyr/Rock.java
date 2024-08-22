@@ -51,8 +51,22 @@ public class Rock extends Sprite {
 
         // build the polygon based on the number of points passed to the constructor
         xCoords = new int[numPoints];
-        yCoords = new int[numPoints];
-        
+        yCoords = new int[numPoints];      
+
+        // damage crack line coords
+        dxCoords = new int[4];
+        dyCoords = new int[4];
+
+        setPolyCoords();
+        setShadowCoords();
+        setDamageCracksCoords();
+    }
+
+    /**
+     * Assigns the coordinates that are used to build the polygon
+     * which shapes the rock
+     */
+    private void setPolyCoords() {
         for (int i=0;i<numPoints;i++) {
             double angle = i * (Math.PI / ((double)numPoints / 2));
             double cosValue = Math.cos(angle);
@@ -66,57 +80,40 @@ public class Rock extends Sprite {
                 xCoords[i] = (int) Math.round(cosValue * radius + randomOffset);
                 yCoords[i] = (int) Math.round(sinValue * radius + randomOffset);
             }
-        }        
-
-        // damage crack line coords
-        dxCoords = new int[4];
-        dyCoords = new int[4];
-
-        setShadowCoords(xCoords, yCoords);
-        setDamageCracksCoords(xCoords, yCoords, radius);
+        } 
     }
 
     public Polygon getPoly() {
         return new Polygon(xCoords, yCoords, numPoints);
     }
-
     public int getRadius() {
         return radius;
     }
-
     public int getStrength() {
         return strength;
     }
-
     public void setStrength(int newStrength) {
         strength = newStrength;
     }
-
     public Boolean getDamaged() {
         return damaged || strength < maxStrength / 2;
     }
-
     public void takeDamage(int damage) {
         strength -= damage;
         damaged = true;
     }
-
     public double getRotation() {
         return rotation;
     }
-
     public void setRotation(int newRotation) {
         rotation = newRotation;
     }
-
     public void addRotation(double newDelta) {
         rotationDelta += newDelta;
     }
-
     public double getImpactForce() {
         return impactForce;
     }
-
     public void handleCollision(Rock otherRock) {
         double rif = impactForce;
         double orif = otherRock.getImpactForce();
@@ -174,27 +171,11 @@ public class Rock extends Sprite {
         return a1;
     }
     
-    public Area getShadowBounds() {
-        int[] xRot = new int[numShadowPoints];
-        int[] yRot = new int[numShadowPoints];
-    
-        for (int i=0;i<numShadowPoints;i++) {
-            xRot[i] = sxCoords[i];
-            yRot[i] = syCoords[i];
-        }
-        
-        Polygon p1 = new Polygon(xRot, yRot, numShadowPoints);
-        AffineTransform at = new AffineTransform();
-    
-        at.rotate(Math.toRadians(rotation), x, y);
-        at.translate(x, y);
-    
-        Area a1 = new Area(at.createTransformedShape(p1));
-        
-        return a1;
-    }
-
-    public void setShadowCoords(int[] xCoords, int[] yCoords) {
+    /**
+     * Create a polygon inside of the rock main shape to draw as a shadow
+     * or shading in order to give the rock some texture
+     */
+    public void setShadowCoords() {
         // Initialize shadow coordinates array
         sxCoords = new int[numShadowPoints];
         syCoords = new int[numShadowPoints];
@@ -215,15 +196,46 @@ public class Rock extends Sprite {
         }
     }
 
-    public void setDamageCracksCoords(int[] xCoords, int[] yCoords, int radius) {
+    /**
+     * Get the shape of the rock's shadow in order for it to be drawn
+     * 
+     * @return  the Area of the shadow's Polygon
+     */
+    public Area getShadowBounds() {
+        int[] xRot = new int[numShadowPoints];
+        int[] yRot = new int[numShadowPoints];
+    
+        for (int i=0;i<numShadowPoints;i++) {
+            xRot[i] = sxCoords[i];
+            yRot[i] = syCoords[i];
+        }
+        
+        Polygon p1 = new Polygon(xRot, yRot, numShadowPoints);
+        AffineTransform at = new AffineTransform();
+    
+        at.rotate(Math.toRadians(rotation), x, y);
+        at.translate(x, y);
+    
+        Area a1 = new Area(at.createTransformedShape(p1));
+        
+        return a1;
+    }
+
+    /**
+     * Set the coordinates to use for drawing crack lines when the rock takes damage
+     * Uses the rock's base polygon for start and ends points then randomly assigns 
+     * points in the middle
+     */
+    public void setDamageCracksCoords() {
         int maxCrackLineOffset = radius / 3;
         int crackLineOffset = Util.randomRange(maxCrackLineOffset / 2, maxCrackLineOffset);
+        int lastIndex = numPoints / 2;
 
         int[][] coords = {
             {xCoords[0], yCoords[0]},
             {crackLineOffset, crackLineOffset},
             {-crackLineOffset, -crackLineOffset},
-            {xCoords[4], yCoords[4]}
+            {xCoords[lastIndex], yCoords[lastIndex]}
         };
         
         for (int i = 0; i < 4; i++) {
@@ -232,7 +244,12 @@ public class Rock extends Sprite {
         }
     }
 
-    // creates 3 lines to draw and rotates them to match the rock's rotation
+    /**
+     * draw damage lines using the coords generated above and rotate them 
+     * to match the rock's rotation
+     * 
+     * @return 3 lines rotated to be drawn on top of the rock to indicate damage
+     */
     public Shape[] getDamageCrackLines() {
         AffineTransform at = new AffineTransform();
         

@@ -5,18 +5,14 @@ import java.awt.event.KeyListener;
 
 import java.util.HashMap;
 
-import com.zephyr.states.StateMachine;
-
 public class Controller implements KeyListener {
     private HashMap<Integer, String> controlMap = new HashMap<>();
     private HashMap<String, Integer> keyStates = new HashMap<>();
     private HashMap<String, Integer> prevKeyStates = new HashMap<>();
     private SpaceShip player;
-    private StateMachine fsm;
 
-    public Controller(SpaceShip player, StateMachine fsm) {
+    public Controller(SpaceShip player) {
         this.player = player;
-        this.fsm = fsm;
 
         // set default game controls
         controlMap.put(37, "LEFT");
@@ -82,13 +78,13 @@ public class Controller implements KeyListener {
         // player.setLaserStrength(2);
         // }
 
-        if (isPressedOnce("PAUSE")) {
-            if (fsm.currentState == GameState.PLAY) {
-                fsm.setState(GameState.PAUSED);
-            } else {
-                fsm.setState(GameState.PLAY);
-            }
-        }
+        // if (isPressedOnce("PAUSE")) {
+        //     if (fsm.currentState == GameState.PLAY) {
+        //         fsm.setState(GameState.PAUSED);
+        //     } else {
+        //         fsm.setState(GameState.PLAY);
+        //     }
+        // }
 
         prevKeyStates = new HashMap<>(keyStates);
     }
