@@ -3,21 +3,31 @@ package com.zephyr.states;
 import com.zephyr.Board;
 
 public class StateManager {
-
     public BaseState currentState;
     Board board;
 
     public StateManager(Board board) {
         this.board = board;
-        currentState.enterState(this, board);
+        this.currentState = new PlayState(board);
+        currentState.enterState();
     }
 
     public void changeState(BaseState newState) {
-        currentState = newState;
-        newState.enterState(this, board);
+        this.currentState = newState;
+        newState.enterState();
     }
 
     public void update() {
-        currentState.updateState(this, board);
+        if (currentState != null) {
+            currentState.updateState();
+        }
+    }
+
+    public BaseState getCurrentState() {
+        return currentState;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 }

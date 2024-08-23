@@ -17,6 +17,10 @@ public class Laser extends Sprite {
         return new Rectangle((int)x, (int)y, 1, size);
     }
 
+    public int getStrength() {
+        return strength;
+    }
+
     public void update() {
         y -= speed;
     }

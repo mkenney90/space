@@ -74,7 +74,7 @@ public class Particle {
         size += sizeDelta;
     }
 
-    static class LaserParticle extends Particle {
+    public static class LaserParticle extends Particle {
         protected int sizeMax;
 
         public LaserParticle(int x, int y, int direction) {

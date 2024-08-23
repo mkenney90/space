@@ -5,14 +5,20 @@ import java.awt.event.KeyListener;
 
 import java.util.HashMap;
 
+import com.zephyr.states.PauseState;
+import com.zephyr.states.PlayState;
+import com.zephyr.states.StateManager;
+
 public class Controller implements KeyListener {
     private HashMap<Integer, String> controlMap = new HashMap<>();
     private HashMap<String, Integer> keyStates = new HashMap<>();
     private HashMap<String, Integer> prevKeyStates = new HashMap<>();
     private SpaceShip player;
+    private StateManager stateManager;
 
-    public Controller(SpaceShip player) {
+    public Controller(SpaceShip player, StateManager stateManager) {
         this.player = player;
+        this.stateManager = stateManager;
 
         // set default game controls
         controlMap.put(37, "LEFT");
@@ -21,6 +27,7 @@ public class Controller implements KeyListener {
         controlMap.put(40, "DOWN");
         controlMap.put(32, "FIRE");
         controlMap.put(80, "PAUSE");
+        controlMap.put(66, "BOSS_DEBUG");
 
         for (String k : controlMap.values()) {
             keyStates.put(k, 0);
@@ -29,6 +36,7 @@ public class Controller implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
+        System.out.println(e.getKeyCode());
         String keyIndex = controlMap.get(e.getKeyCode());
         keyStates.put(keyIndex, keyStates.get(keyIndex) + 1);
     }
@@ -78,13 +86,17 @@ public class Controller implements KeyListener {
         // player.setLaserStrength(2);
         // }
 
-        // if (isPressedOnce("PAUSE")) {
-        //     if (fsm.currentState == GameState.PLAY) {
-        //         fsm.setState(GameState.PAUSED);
-        //     } else {
-        //         fsm.setState(GameState.PLAY);
-        //     }
-        // }
+        if (isPressedOnce("PAUSE")) {
+            if (stateManager.getCurrentState() instanceof PlayState) {
+                stateManager.changeState(new PauseState(stateManager.getBoard()));
+            } else {
+                stateManager.changeState(new PlayState(stateManager.getBoard()));
+            }
+        }
+
+        if (isPressed("BOSS_DEBUG")) {
+            stateManager.getBoard().setGamePhase("boss");
+        }
 
         prevKeyStates = new HashMap<>(keyStates);
     }

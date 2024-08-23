@@ -4,10 +4,8 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 abstract class Sprite {
-    protected float x;
-    protected float y;
-    protected int width;
-    protected int height;
+    protected float x, y;
+    protected int width, height;
     protected boolean visible;
     protected Image image;
 

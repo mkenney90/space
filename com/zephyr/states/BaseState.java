@@ -1,13 +1,14 @@
 package com.zephyr.states;
 
+import java.awt.Graphics;
+
 import com.zephyr.Board;
 
-abstract class BaseState {
-    void enterState(StateManager state, Board board) {
-        
-    }
+public interface BaseState {
+    void enterState();
 
-    void updateState(StateManager state, Board board) {
+    void updateState();
 
-    }
+    void render(Graphics g);
+
 }

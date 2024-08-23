@@ -9,7 +9,6 @@ public class Main extends JFrame {
     public static final int SCREEN_WIDTH = 1200;
     public static final int SCREEN_HEIGHT = 768;
     Board gameBoard;
-    StateManager fsm;
 
     public Main() {
         initGameWindow();
@@ -24,8 +23,6 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        fsm = new StateManager(gameBoard);
     }
 
     public static void main(String[] args) {
