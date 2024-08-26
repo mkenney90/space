@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 
 import java.util.HashMap;
 
+import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.states.PauseState;
 import com.zephyr.states.PlayState;
 import com.zephyr.states.StateManager;
@@ -28,6 +29,7 @@ public class Controller implements KeyListener {
         controlMap.put(32, "FIRE");
         controlMap.put(80, "PAUSE");
         controlMap.put(66, "BOSS_DEBUG");
+        controlMap.put(77, "DEATH_DEBUG");
 
         for (String k : controlMap.values()) {
             keyStates.put(k, 0);
@@ -96,6 +98,9 @@ public class Controller implements KeyListener {
 
         if (isPressed("BOSS_DEBUG")) {
             stateManager.getBoard().setGamePhase("boss");
+        }
+        if (isPressed("DEATH_DEBUG")) {
+            stateManager.getBoard().getSpaceShip().setState(ShipState.DYING);
         }
 
         prevKeyStates = new HashMap<>(keyStates);

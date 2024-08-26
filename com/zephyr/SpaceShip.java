@@ -10,6 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 public class SpaceShip extends Sprite {
+    public enum ShipState {
+        NORMAL,
+        SHIELD,
+        DYING,
+        EXPLODE,
+        DEAD
+    }
+    private ShipState state;
+    private int deathTimer = 0;
+
     private float dx = 0;
     private float dy = 0;
     private float ix = 0;
@@ -17,7 +27,7 @@ public class SpaceShip extends Sprite {
     private float accelX = 0;
     private float accelY = 0;
 
-    private float maxDX = 3;
+    private float maxDX = 2.5f;
     private float maxDY = 2.25f;
 
     private String direction = "neutral";
@@ -25,6 +35,7 @@ public class SpaceShip extends Sprite {
     private int laserTimer = 0;
     private int laserStrength = 1;
     private double rotation = 0;
+    private double rotationDelta = 0;
     private Image image;
     private List<Laser> lasers;
     private Map<String, BufferedImage> sprites = new HashMap<>();
@@ -54,9 +65,15 @@ public class SpaceShip extends Sprite {
         lasers = new ArrayList<>();
         width = image.getWidth(null);
         height = image.getHeight(null);
+        state = ShipState.NORMAL;
     }
 
-    public void tick() {
+    public void update() {
+        if (state == ShipState.DYING) {
+            explode();
+            return;
+        }
+
         if (Math.abs(ix) > Math.abs(accelX)) {
             ix *= 0.95;
         }
@@ -83,6 +100,15 @@ public class SpaceShip extends Sprite {
             dy = maxDY * Math.signum(dy);
         }
 
+        if (rotationDelta < 0) {
+            rotation--;
+            rotationDelta++;
+        }
+        if (rotationDelta > 0) {
+            rotation++;
+            rotationDelta--;
+        }
+
         laserTimer = Math.max(laserTimer - 1, 0);
         image = sprites.get(direction);
     }
@@ -98,6 +124,23 @@ public class SpaceShip extends Sprite {
         lasers.add(new Laser((int) x + getWidth() / 2, (int) y + 4, 6, laserStrength));
         SoundControl.playSound("laser1.wav");
         laserTimer = laserDelay;
+    }
+
+    public void explode() {
+        if (deathTimer < 50) {
+            applyJitter();
+            deathTimer++;
+        } else {
+            state = ShipState.EXPLODE;
+            visible = false;
+        }
+    }
+
+    public void applyJitter() {
+        setDX(Util.randomRange(-2,2));
+        setDY(Util.randomRange(-2,2));
+        rotationDelta = Util.randomRange(-90, 90);
+        System.out.println(getRotation());
     }
 
     public void setDX(int dx) {
@@ -138,6 +181,16 @@ public class SpaceShip extends Sprite {
 
     public Image getImage() {
         return image;
+    }
+
+    public ShipState getState() {
+        return state;
+    }
+
+    public void setState(ShipState newState) {
+        if (newState instanceof ShipState) {
+            state = newState;
+        }
     }
 
     public List<Laser> getLasers() {

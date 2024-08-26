@@ -8,6 +8,7 @@ import com.zephyr.Board;
 import com.zephyr.Laser;
 import com.zephyr.Particle;
 import com.zephyr.Particle.LaserParticle;
+import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.enemies.BaseEnemy;
 import com.zephyr.enemies.BasicEnemy;
 import com.zephyr.Rock;
@@ -113,22 +114,53 @@ public class PlayState implements BaseState {
         // generate ship thruster flame particles
         spaceShipParticleTimer++;
 
-        if (spaceShipParticleTimer % 2 == 0) {
+        if (spaceShip.getState() == ShipState.NORMAL) {
+            if (spaceShipParticleTimer % 2 == 0) {
+                particles.add(new Particle(
+                    spaceShip.getXInt() + spaceShip.getWidth() / 2,
+                    spaceShip.getYInt() + 21,
+                    0.5,
+                    90,
+                    6,
+                    -0.99,
+                    true,
+                    Util.flameColor(),
+                    1.0f,
+                    0));
+            }
+        }
+        if (spaceShip.getState() == ShipState.DYING) {
             particles.add(new Particle(
-                spaceShip.getXInt() + spaceShip.getWidth() / 2,
-                spaceShip.getYInt() + 21,
-                0.5,
-                90,
-                6,
+                spaceShip.getXInt() + Util.randomRange(0, spaceShip.getWidth()),
+                spaceShip.getYInt() + Util.randomRange(0, spaceShip.getHeight()),
+                1,
+                Util.randomRange(0, 360),
+                7,
                 -0.99,
                 true,
                 Util.flameColor(),
                 1.0f,
                 0));
         }
+        if (spaceShip.getState() == ShipState.EXPLODE) {
+            for (int i=0;i<45;i++) {
+                particles.add(new Particle(
+                    spaceShip.getXInt() + Util.randomRange(0, spaceShip.getWidth()),
+                    spaceShip.getYInt() + Util.randomRange(0, spaceShip.getHeight()),
+                    5,
+                    Util.randomRange(0, 360),
+                    Util.randomRange(7,9),
+                    -0.15,
+                    true,
+                    Util.flameColor(),
+                    1.0f,
+                    0));
+            }
+            spaceShip.setState(ShipState.DEAD);
+        }
 
         spaceShip.move();
-        spaceShip.tick();
+        spaceShip.update();
     }
 
     private void handleLasers(List<Laser> lasers, List<Rock> rocks, List<Particle> particles, SpaceShip spaceShip) {

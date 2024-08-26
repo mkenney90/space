@@ -1,8 +1,6 @@
 package com.zephyr;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +12,11 @@ import com.zephyr.states.PauseState;
 import com.zephyr.states.PlayState;
 import com.zephyr.states.StateManager;
 
-public class Board extends JPanel implements ActionListener {
+public class Board extends JPanel implements Runnable {
     private Timer timer;
     private int score = 0;
     private SpaceShip spaceShip;
-    private final int DELAY = 10;
+    private final int DELAY = 14;
     Controller controller;
     private List<Star> stars;
     private List<Rock> rocks;
@@ -29,8 +27,11 @@ public class Board extends JPanel implements ActionListener {
     private int lastXValue = 0;
     private String gamePhase = "normal";
 
-    private final Color LASER_COLOR = new Color(66, 245, 108, 107);
+    private final Color LASER_COLOR_PRIMARY = Color.red;
+    private final Color LASER_COLOR_SECONDARY = new Color(66, 245, 108, 107);
     private final Color STAR_COLOR = new Color(255, 255, 150);
+    private final Color ROCK_COLOR = Color.lightGray;
+    private final Color SHADOW_COLOR = Color.gray;
     private final int UI_FONT_SIZE = 20;
     private final int MAX_SCORE_LENGTH = 5;
 
@@ -38,7 +39,21 @@ public class Board extends JPanel implements ActionListener {
     private PlayState playState;
 
     public Board(int width, int height) {
+        super();
         initBoard(width, height);
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(DELAY);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            step();
+        }
     }
 
     private void initBoard(int width, int height) {
@@ -57,9 +72,6 @@ public class Board extends JPanel implements ActionListener {
         rocks = new ArrayList<>();
         particles = new ArrayList<>();
         enemies = new ArrayList<>();
-
-        timer = new Timer(DELAY, this);
-        timer.start();
     }
 
     @Override
@@ -82,10 +94,10 @@ public class Board extends JPanel implements ActionListener {
 
         for (Laser l : lasers) {
             if (l.strength > 1) {
-                g2d.setPaint(LASER_COLOR);
+                g2d.setPaint(LASER_COLOR_SECONDARY);
                 g2d.drawRect(l.getXInt() - 1, l.getYInt() - 1, 3, l.size + 2);
             }
-            g2d.setPaint(Color.red);
+            g2d.setPaint(LASER_COLOR_PRIMARY);
             g2d.drawRect(l.getXInt(), l.getYInt(), 1, l.size);
         }
 
@@ -95,9 +107,9 @@ public class Board extends JPanel implements ActionListener {
         }
 
         for (Rock r : rocks) {
-            g2d.setPaint(Color.lightGray);
+            g2d.setPaint(ROCK_COLOR);
             g2d.fill(r.getBounds());
-            g2d.setPaint(Color.gray);
+            g2d.setPaint(SHADOW_COLOR);
             g2d.fill(r.getShadowBounds());
             if (r.getDamaged()) {
                 g2d.setPaint(Color.darkGray);
@@ -127,8 +139,11 @@ public class Board extends JPanel implements ActionListener {
             e.render(g);
         }
 
-        g2d.rotate(Math.toRadians(spaceShip.getRotation()));
-        g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
+        if (spaceShip.visible) {
+            g2d.rotate(Math.toRadians(spaceShip.getRotation()), spaceShip.getX()+spaceShip.getWidth()/2, spaceShip.getY()+spaceShip.getHeight()/2);
+            g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
+            g2d.rotate(-Math.toRadians(spaceShip.getRotation()), spaceShip.getX()+spaceShip.getWidth()/2, spaceShip.getY()+spaceShip.getHeight()/2);
+        }
         // g2d.drawRect(spaceShip.getXInt(), spaceShip.getYInt(), spaceShip.getWidth(),
         // spaceShip.getHeight());
 
@@ -152,11 +167,6 @@ public class Board extends JPanel implements ActionListener {
 
         // reset transforms
         g2d.setTransform(at);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        step();
     }
 
     private void step() {
