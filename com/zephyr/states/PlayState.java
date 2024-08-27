@@ -61,11 +61,11 @@ public class PlayState implements BaseState {
     private void handleRocks(List<Rock> rocks, SpaceShip spaceShip, int score, int rockCooldown, int lastXValue, List<Particle> particles, List<BaseEnemy> enemies, String gamePhase) {
         // spawn rocks
         if (!gamePhase.equals("boss")) {
-            if (Math.random() * 100 < 1 && rocks.size() < 6 && rockCooldown < 1) {
+            if (Math.random() * 100 < 5 && rocks.size() < 6 + board.getGameLevel() && rockCooldown < 1) {
                 int newRx;
                 do {
                     newRx = 25 + (int) (Math.random() * 550);
-                } while (Math.abs(newRx - lastXValue) < 50);
+                } while (Math.abs(newRx - lastXValue) < 75);
                 // all rocks have a minimum of 8 sides
                 int points = Util.randomRange(8, 16);
                 Rock newRock = new Rock(newRx, Util.randomRange(0, 20) - 50, points);

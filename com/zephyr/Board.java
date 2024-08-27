@@ -7,14 +7,15 @@ import java.util.List;
 
 import javax.swing.*;
 
+import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.enemies.BaseEnemy;
 import com.zephyr.states.PauseState;
 import com.zephyr.states.PlayState;
 import com.zephyr.states.StateManager;
 
 public class Board extends JPanel implements Runnable {
-    private Timer timer;
     private int score = 0;
+    private int gameLevel = 1;
     private SpaceShip spaceShip;
     private final int DELAY = 14;
     Controller controller;
@@ -141,7 +142,9 @@ public class Board extends JPanel implements Runnable {
 
         if (spaceShip.visible) {
             g2d.rotate(Math.toRadians(spaceShip.getRotation()), spaceShip.getX()+spaceShip.getWidth()/2, spaceShip.getY()+spaceShip.getHeight()/2);
-            g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
+            if (spaceShip.getState() == ShipState.NORMAL || spaceShip.getIFramesTimer() % 15 <= 8) {
+                g2d.drawImage(spaceShip.getImage(), spaceShip.getXInt(), spaceShip.getYInt(), null);
+            }
             g2d.rotate(-Math.toRadians(spaceShip.getRotation()), spaceShip.getX()+spaceShip.getWidth()/2, spaceShip.getY()+spaceShip.getHeight()/2);
         }
         // g2d.drawRect(spaceShip.getXInt(), spaceShip.getYInt(), spaceShip.getWidth(),
@@ -161,6 +164,7 @@ public class Board extends JPanel implements Runnable {
             String scoreFormat = "%0" + numZeroes + "d";
             g2d.drawString(String.format(scoreFormat, 0), 10, 20);
         }
+        g2d.drawString("" + gameLevel, 10, 50);
         g2d.shear(0.15, 0); // undo shear effect
 
         stateManager.getCurrentState().render(g);
@@ -172,6 +176,7 @@ public class Board extends JPanel implements Runnable {
     private void step() {
         controller.handleInput();
         stateManager.update();
+        gameLevel = score / 500;
         repaint();
     }
 
@@ -230,6 +235,10 @@ public class Board extends JPanel implements Runnable {
         this.score = newScore;
     }
 
+    public int getGameLevel() {
+        return gameLevel;
+    }
+
     public void addScore(int points) {
         this.score += points;
     }
@@ -241,4 +250,5 @@ public class Board extends JPanel implements Runnable {
     public void setGamePhase(String newPhase) {
         this.gamePhase = newPhase;
     }
+
 }

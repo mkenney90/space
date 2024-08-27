@@ -13,11 +13,13 @@ public class SpaceShip extends Sprite {
     public enum ShipState {
         NORMAL,
         SHIELD,
+        IFRAMES,
         DYING,
         EXPLODE,
         DEAD
     }
     private ShipState state;
+    private int iFramesTimer = 105;
     private int deathTimer = 0;
 
     private float dx = 0;
@@ -65,13 +67,21 @@ public class SpaceShip extends Sprite {
         lasers = new ArrayList<>();
         width = image.getWidth(null);
         height = image.getHeight(null);
-        state = ShipState.NORMAL;
+        state = ShipState.IFRAMES;
     }
 
     public void update() {
         if (state == ShipState.DYING) {
             explode();
             return;
+        }
+
+        if (state == ShipState.IFRAMES) {
+            if (iFramesTimer > 0) {
+                iFramesTimer--;
+            } else {
+                state = ShipState.NORMAL;
+            }
         }
 
         if (Math.abs(ix) > Math.abs(accelX)) {
@@ -185,6 +195,10 @@ public class SpaceShip extends Sprite {
 
     public ShipState getState() {
         return state;
+    }
+
+    public int getIFramesTimer() {
+        return iFramesTimer;
     }
 
     public void setState(ShipState newState) {
