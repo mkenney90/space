@@ -16,7 +16,6 @@ public abstract class BaseEnemy {
     protected Image image;
     protected String imageFile;
 
-    // Constructor
     public BaseEnemy(int x, int y, int width, int height, int speed, int health, Color color, String imageFile) {
         this.x = x;
         this.y = y;

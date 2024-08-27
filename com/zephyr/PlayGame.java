@@ -10,12 +10,12 @@ import javax.swing.JFrame;
 public class PlayGame extends JFrame {
     public static final int SCREEN_WIDTH = 1200;
     public static final int SCREEN_HEIGHT = 768;
-    Board gameBoard;
+    Board board;
 
     public PlayGame() {
-        Board gameBoard = new Board(SCREEN_WIDTH, SCREEN_HEIGHT);
+        board = new Board(SCREEN_WIDTH, SCREEN_HEIGHT);
         setTitle("Generic Space Shooter 2k19");
-        setContentPane(gameBoard);
+        setContentPane(board);
         pack();
         
         setLocationRelativeTo(null);

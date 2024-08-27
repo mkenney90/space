@@ -7,6 +7,7 @@ import java.util.List;
 import com.zephyr.Board;
 import com.zephyr.Laser;
 import com.zephyr.Particle;
+import com.zephyr.PlayGame;
 import com.zephyr.Particle.LaserParticle;
 import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.enemies.BaseEnemy;
@@ -17,8 +18,10 @@ import com.zephyr.Star;
 import com.zephyr.Util;
 
 public class PlayState implements BaseState {
+    private final int[] GAME_BOUNDS = {PlayGame.SCREEN_WIDTH+50, PlayGame.SCREEN_HEIGHT+50};
+    Rectangle gameBoundsRect = new Rectangle(-25, -25, GAME_BOUNDS[0], GAME_BOUNDS[1]);
     private Board board;
-
+    
     public PlayState(Board board) {
         this.board = board;
     }
@@ -122,7 +125,7 @@ public class PlayState implements BaseState {
                     0.5,
                     90,
                     6,
-                    -0.99,
+                    -1.0,
                     true,
                     Util.flameColor(),
                     1.0f,
@@ -178,8 +181,9 @@ public class PlayState implements BaseState {
                         board.addScore(25);
                         double impactRadius = r.getDistance(l);
                         r.addSpeed('x', l.getX() < r.getX() ? 0.25 : -0.25);
-                        r.addRotation((l.getX() < r.getX() ? 1 : -1) * impactRadius * 0.1);
                         r.addSpeed('y', -0.12);
+                        // add a spin force to the rock
+                        r.addRotation((l.getX() < r.getX() ? 1 : -1) * impactRadius * 0.20); 
                     } else {
                         // Add particles for rock breakage
                         for (int i = 0; i < 8; i++) {
@@ -191,20 +195,22 @@ public class PlayState implements BaseState {
                         }
                         board.addScore(100);
                     }
-                    l.setVisible(false); // Hide the laser
-                    r.takeDamage(spaceShip.getLaserStrength());
+                    // Destroy the laser
+                    l.setVisible(false); 
+                    r.takeDamage(spaceShip.getLaserLevel());
                     particles.add(new LaserParticle(l.getXInt(), l.getYInt(), 0));
                 }
             }
             l.update();
         }
         // Remove lasers that are no longer visible or have gone off-screen
-        lasers.removeIf(l -> (l.getY() < -10 || !l.isVisible()));
+        lasers.removeIf(l -> (!l.getBounds().intersects(gameBoundsRect) || !l.isVisible()));
     }
 
     private void handleEnemies(List<BaseEnemy> enemies) {
         for (BaseEnemy e: enemies) {
             e.move();
+            e.update();
         }
     }
 

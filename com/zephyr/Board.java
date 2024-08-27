@@ -9,14 +9,13 @@ import javax.swing.*;
 
 import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.enemies.BaseEnemy;
-import com.zephyr.states.PauseState;
-import com.zephyr.states.PlayState;
 import com.zephyr.states.StateManager;
 
 public class Board extends JPanel implements Runnable {
     private int score = 0;
     private int gameLevel = 1;
     private SpaceShip spaceShip;
+    private int ships = 3;
     private final int DELAY = 14;
     Controller controller;
     private List<Star> stars;
@@ -37,7 +36,6 @@ public class Board extends JPanel implements Runnable {
     private final int MAX_SCORE_LENGTH = 5;
 
     public StateManager stateManager;
-    private PlayState playState;
 
     public Board(int width, int height) {
         super();
@@ -88,32 +86,32 @@ public class Board extends JPanel implements Runnable {
 
         g2d.scale(2.0, 2.0);
 
-        g2d.setPaint(new Color(175, 255, 255, 30));
+        g2d.setColor(new Color(175, 255, 255, 30));
         g2d.drawLine(300, 0, 300, 340);
 
         List<Laser> lasers = spaceShip.getLasers();
 
         for (Laser l : lasers) {
             if (l.strength > 1) {
-                g2d.setPaint(LASER_COLOR_SECONDARY);
+                g2d.setColor(LASER_COLOR_SECONDARY);
                 g2d.drawRect(l.getXInt() - 1, l.getYInt() - 1, 3, l.size + 2);
             }
-            g2d.setPaint(LASER_COLOR_PRIMARY);
+            g2d.setColor(LASER_COLOR_PRIMARY);
             g2d.drawRect(l.getXInt(), l.getYInt(), 1, l.size);
         }
 
-        g2d.setPaint(STAR_COLOR);
+        g2d.setColor(STAR_COLOR);
         for (Star s : stars) {
             g2d.drawLine(s.getXInt(), s.getYInt(), s.getXInt(), s.getYInt() - 1);
         }
 
         for (Rock r : rocks) {
-            g2d.setPaint(ROCK_COLOR);
+            g2d.setColor(ROCK_COLOR);
             g2d.fill(r.getBounds());
-            g2d.setPaint(SHADOW_COLOR);
+            g2d.setColor(SHADOW_COLOR);
             g2d.fill(r.getShadowBounds());
             if (r.getDamaged()) {
-                g2d.setPaint(Color.darkGray);
+                g2d.setColor(Color.darkGray);
                 Shape[] dLines = r.getDamageCrackLines();
                 for (int i = 0; i < dLines.length; i++) {
                     g2d.draw(dLines[i]);
@@ -121,16 +119,16 @@ public class Board extends JPanel implements Runnable {
             }
             // if (r.getStrength() > 1) {
             // // draw outline on rocks with shield
-            // g2d.setPaint(Color.yellow);
+            // g2d.setColor(Color.yellow);
             // if (r.getStrength() > 2) {
-            // g2d.setPaint(Color.red);
+            // g2d.setColor(Color.red);
             // }
             // g2d.draw(r.getBounds());
             // }
         }
 
         for (Particle p : particles) {
-            g2d.setPaint(p.getColor());
+            g2d.setColor(p.getColor());
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.fillOval((int) p.getX() - p.getSize() / 2, (int) p.getY() - p.getSize() / 2, p.getSize(), p.getSize());
@@ -152,8 +150,8 @@ public class Board extends JPanel implements Runnable {
 
         // draw the score text on screen
         g2d.shear(-0.15, 0); // set shear effect
-        g2d.setPaint(Color.black);
-        g2d.fillRect(0, 0, 100, 30);
+        g2d.setColor(Color.black);
+        g2d.fillRect(0, 0, 600, 30);
         g2d.setFont(new Font("Verdana", Font.BOLD, UI_FONT_SIZE));
         g2d.setColor(Color.white);
         g2d.drawString(String.format("%05d", score), 10, 20);
@@ -164,7 +162,10 @@ public class Board extends JPanel implements Runnable {
             String scoreFormat = "%0" + numZeroes + "d";
             g2d.drawString(String.format(scoreFormat, 0), 10, 20);
         }
-        g2d.drawString("" + gameLevel, 10, 50);
+        for (int i=0;i<ships;i++) {
+            g2d.setColor(Color.red);
+            g2d.fillOval(15 + (i * 12), 25, 8, 8);
+        }
         g2d.shear(0.15, 0); // undo shear effect
 
         stateManager.getCurrentState().render(g);

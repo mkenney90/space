@@ -9,7 +9,6 @@ public class BasicEnemy extends BaseEnemy {
 
     @Override
     public void update() {
-        y += speed;
         bounds.setLocation(x, y);
     }
 }

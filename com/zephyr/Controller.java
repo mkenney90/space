@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 
 import java.util.HashMap;
 
+import com.zephyr.SpaceShip.Direction;
 import com.zephyr.SpaceShip.ShipState;
 import com.zephyr.states.PauseState;
 import com.zephyr.states.PlayState;
@@ -63,13 +64,13 @@ public class Controller implements KeyListener {
     public void handleInput() {
         if (isPressed("LEFT")) {
             player.setAccelX(-0.2f);
-            player.setDirection("left");
+            player.setDirection(Direction.left);
         } else if (isPressed("RIGHT")) {
             player.setAccelX(0.2f);
-            player.setDirection("right");
+            player.setDirection(Direction.right);
         } else {
             player.setAccelX(0);
-            player.setDirection("neutral");
+            player.setDirection(Direction.neutral);
         }
 
         if (isPressed("UP")) {
