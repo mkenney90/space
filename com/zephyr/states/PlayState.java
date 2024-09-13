@@ -146,7 +146,7 @@ public class PlayState implements BaseState {
                 0));
         }
         if (spaceShip.getState() == ShipState.EXPLODE) {
-            for (int i=0;i<45;i++) {
+            for (int i=0;i<60;i++) {
                 particles.add(new Particle(
                     spaceShip.getXInt() + Util.randomRange(0, spaceShip.getWidth()),
                     spaceShip.getYInt() + Util.randomRange(0, spaceShip.getHeight()),

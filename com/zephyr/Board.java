@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import com.zephyr.SpaceShip.ShipState;
@@ -16,7 +17,8 @@ public class Board extends JPanel implements Runnable {
     private int gameLevel = 1;
     private SpaceShip spaceShip;
     private int ships = 3;
-    private final int DELAY = 14;
+    private Image shipIcon;
+    private final int DELAY = 13;
     Controller controller;
     private List<Star> stars;
     private List<Rock> rocks;
@@ -61,6 +63,11 @@ public class Board extends JPanel implements Runnable {
         setBackground(Color.black);
 
         spaceShip = new SpaceShip(288, 300);
+        try {
+            shipIcon = ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\images\\spaceship.png"));
+        } catch (Exception e) {
+            System.out.println("Error loading icon file");
+        }
         stateManager = new StateManager(this);
         controller = new Controller(spaceShip, stateManager);
         addKeyListener(controller);
@@ -162,9 +169,11 @@ public class Board extends JPanel implements Runnable {
             String scoreFormat = "%0" + numZeroes + "d";
             g2d.drawString(String.format(scoreFormat, 0), 10, 20);
         }
+        g2d.scale(0.5,0.5);
         for (int i=0;i<ships;i++) {
-            g2d.setColor(Color.red);
-            g2d.fillOval(15 + (i * 12), 25, 8, 8);
+            g2d.drawImage(spaceShip.getImage(), 24 + (i * 32), 45, null);
+            // g2d.setColor(Color.red);
+            // g2d.fillOval(15 + (i * 12), 25, 8, 8);
         }
         g2d.shear(0.15, 0); // undo shear effect
 

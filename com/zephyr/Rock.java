@@ -9,6 +9,7 @@ import java.awt.geom.Line2D;
 public class Rock extends Sprite {
     private double xSpeed;
     private double ySpeed;
+    private double maxSpeed;
     private int radius;
     private int mass;
     private double impactForce;
@@ -37,6 +38,7 @@ public class Rock extends Sprite {
         
         xSpeed = 0;
         ySpeed = Math.random() * 0.5 + 0.6;
+        maxSpeed = 7;
 
         rotation = (int) (Math.random() * 360);
         rotationDelta = Util.randomRange(-4, 4);
@@ -277,5 +279,8 @@ public class Rock extends Sprite {
         y = (y + (float) ySpeed);
         impactForce = (mass * (xSpeed + ySpeed)) / 5;
         setVisible(strength > 0);
+
+        xSpeed = Math.clamp(xSpeed, -maxSpeed, maxSpeed);
+        ySpeed = Math.clamp(ySpeed, -maxSpeed, maxSpeed);
     }
 }

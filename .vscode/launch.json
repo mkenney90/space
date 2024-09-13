@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PlayGame",
+            "request": "launch",
+            "mainClass": "com.zephyr.PlayGame",
+            "projectName": "space_1069df40"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.zephyr.Main",
+            "projectName": "space_1069df40"
+        },
+        {
+            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "com.zephyr.Main",
