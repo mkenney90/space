@@ -5,7 +5,6 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import com.zephyr.SpaceShip.ShipState;
@@ -17,9 +16,7 @@ public class Board extends JPanel implements Runnable {
     private int gameLevel = 1;
     private SpaceShip spaceShip;
     private int ships = 3;
-    private Image shipIcon;
     private final int DELAY = 13;
-    Controller controller;
     private List<Star> stars;
     private List<Rock> rocks;
     private List<Particle> particles;
@@ -28,7 +25,7 @@ public class Board extends JPanel implements Runnable {
     private int spaceShipParticleTimer = 0;
     private int lastXValue = 0;
     private String gamePhase = "normal";
-
+    
     private final Color LASER_COLOR_PRIMARY = Color.red;
     private final Color LASER_COLOR_SECONDARY = new Color(66, 245, 108, 107);
     private final Color STAR_COLOR = new Color(255, 255, 150);
@@ -36,8 +33,10 @@ public class Board extends JPanel implements Runnable {
     private final Color SHADOW_COLOR = Color.gray;
     private final int UI_FONT_SIZE = 20;
     private final int MAX_SCORE_LENGTH = 5;
-
+    
     public StateManager stateManager;
+    
+    Controller controller;
 
     public Board(int width, int height) {
         super();
@@ -63,11 +62,6 @@ public class Board extends JPanel implements Runnable {
         setBackground(Color.black);
 
         spaceShip = new SpaceShip(288, 300);
-        try {
-            shipIcon = ImageIO.read(getClass().getResourceAsStream("\\src\\resources\\images\\spaceship.png"));
-        } catch (Exception e) {
-            System.out.println("Error loading icon file");
-        }
         stateManager = new StateManager(this);
         controller = new Controller(spaceShip, stateManager);
         addKeyListener(controller);
@@ -124,14 +118,14 @@ public class Board extends JPanel implements Runnable {
                     g2d.draw(dLines[i]);
                 }
             }
-            // if (r.getStrength() > 1) {
-            // // draw outline on rocks with shield
-            // g2d.setColor(Color.yellow);
-            // if (r.getStrength() > 2) {
-            // g2d.setColor(Color.red);
-            // }
-            // g2d.draw(r.getBounds());
-            // }
+            // draw outlines around rocks with "shields"
+            if (r.getStrength() > 5) {
+            g2d.setColor(Color.yellow);
+            if (r.getStrength() > 3) {
+            g2d.setColor(Color.red);
+            }
+            g2d.draw(r.getBounds());
+            }
         }
 
         for (Particle p : particles) {
@@ -152,8 +146,8 @@ public class Board extends JPanel implements Runnable {
             }
             g2d.rotate(-Math.toRadians(spaceShip.getRotation()), spaceShip.getX()+spaceShip.getWidth()/2, spaceShip.getY()+spaceShip.getHeight()/2);
         }
-        // g2d.drawRect(spaceShip.getXInt(), spaceShip.getYInt(), spaceShip.getWidth(),
-        // spaceShip.getHeight());
+
+        //#region GUI
 
         // draw the score text on screen
         g2d.shear(-0.15, 0); // set shear effect
@@ -169,13 +163,17 @@ public class Board extends JPanel implements Runnable {
             String scoreFormat = "%0" + numZeroes + "d";
             g2d.drawString(String.format(scoreFormat, 0), 10, 20);
         }
+
+        // draw lives on screen
         g2d.scale(0.5,0.5);
         for (int i=0;i<ships;i++) {
-            g2d.drawImage(spaceShip.getImage(), 24 + (i * 32), 45, null);
+            g2d.drawImage(spaceShip.getLivesImage(), 24 + (i * 32), 45, null);
             // g2d.setColor(Color.red);
             // g2d.fillOval(15 + (i * 12), 25, 8, 8);
         }
         g2d.shear(0.15, 0); // undo shear effect
+
+        //#endregion
 
         stateManager.getCurrentState().render(g);
 
@@ -259,6 +257,14 @@ public class Board extends JPanel implements Runnable {
 
     public void setGamePhase(String newPhase) {
         this.gamePhase = newPhase;
+    }
+
+    public int getShips() {
+        return this.ships;
+    }
+
+    public void setShips(int ships) {
+        this.ships = ships;
     }
 
 }

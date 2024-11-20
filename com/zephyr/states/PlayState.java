@@ -159,6 +159,7 @@ public class PlayState implements BaseState {
                     1.0f,
                     0));
             }
+            board.setShips(board.getShips() - 1);
             spaceShip.setState(ShipState.DEAD);
         }
 

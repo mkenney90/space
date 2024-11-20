@@ -26,6 +26,7 @@ public class SpaceShip extends Sprite {
     private ShipState state;
     private int iFramesTimer = 105;
     private int deathTimer = 0;
+    private int reviveTimer = 90;
 
     private float dx = 0;
     private float dy = 0;
@@ -44,6 +45,7 @@ public class SpaceShip extends Sprite {
     private double rotation = 0;
     private double rotationDelta = 0;
     private Image image;
+    private Image livesImage;
     private List<Laser> lasers;
     private Map<Direction, BufferedImage> sprites = new HashMap<>();
 
@@ -69,13 +71,36 @@ public class SpaceShip extends Sprite {
         loadImages();
 
         image = sprites.get(direction);
+        livesImage = sprites.get(Direction.neutral);
         lasers = new ArrayList<>();
         width = image.getWidth(null);
         height = image.getHeight(null);
         state = ShipState.IFRAMES;
     }
 
+    private void reviveShip() {
+        // reset player ship after death
+        x = 288;
+        y = 300;
+        visible = true;
+        iFramesTimer = 105;
+        deathTimer = 0;
+        reviveTimer = 90;
+        direction = Direction.neutral;
+        state = ShipState.IFRAMES;
+    }
+
     public void update() {
+        if (state == ShipState.DEAD) {
+            dx = dy = ix = iy = 0;
+            if (reviveTimer > 0) {
+                reviveTimer--;
+            } else {
+                reviveShip();
+            }
+            return;
+        }
+
         if (state == ShipState.DYING) {
             explode();
             return;
@@ -147,6 +172,7 @@ public class SpaceShip extends Sprite {
             deathTimer++;
         } else {
             state = ShipState.EXPLODE;
+            rotation = 0;
             visible = false;
         }
     }
@@ -195,6 +221,10 @@ public class SpaceShip extends Sprite {
 
     public Image getImage() {
         return image;
+    }
+
+    public Image getLivesImage() {
+        return livesImage;
     }
 
     public ShipState getState() {
